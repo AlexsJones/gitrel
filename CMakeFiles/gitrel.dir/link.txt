@@ -1,1 +1,0 @@
-/usr/bin/cc      CMakeFiles/gitrel.dir/src/gitrelation.c.o  -o gitrel -rdynamic -lgit2 -ljnxc 
