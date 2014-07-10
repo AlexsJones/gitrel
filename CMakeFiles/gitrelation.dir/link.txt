@@ -1,0 +1,1 @@
+/usr/bin/cc      CMakeFiles/gitrelation.dir/src/gitrelation.c.o  -o gitrelation -rdynamic -lgit2 
