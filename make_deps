@@ -1,0 +1,6 @@
+git submodule foreach git pull
+pushd jnxlibc
+cmake .
+make
+sudo make install 
+popd

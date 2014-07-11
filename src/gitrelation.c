@@ -21,7 +21,7 @@
 #include <jnxc_headers/jnxlog.h>
 #include <jnxc_headers/jnxcheck.h>
 #include <unistd.h>
-
+#include <getopt.h>
 
 void list_remotes(git_repository *repo) {
 	git_strarray remotes = {0};
@@ -35,6 +35,9 @@ void list_remotes(git_repository *repo) {
 		if(!error) {
 			printf("%s\n",git_remote_url(remote));
 		}
+	}
+	if(x == 0) {
+		printf("NONE\n");
 	}
 	git_strarray_free(&remotes);
 }
@@ -54,10 +57,31 @@ void list_branches(git_repository *repo, git_branch_t type) {
 		}
 		++c;
 	}
+	if(c == 0) {
+		printf("NONE\n");
+	}
 	git_branch_iterator_free(iterator);
+}
+void usage() {
+	printf("========================gitrel============================\n");
+	printf("A simple tool for reminding you what's going on with git\n");
+	printf("==========================================================\n");
+	exit(0);
 }
 int main(int argc, char **argv) {
 
+	int c;
+	int option_index = 0;
+	static struct option long_option[] = { 
+		{"help",no_argument, 0, 'h' }
+	};
+	while(((c = getopt_long(argc, argv,"h",long_option,&option_index))) != -1) {
+		switch(c) {
+			case 'h':
+				usage();
+				break;
+		}
+	}
 	char wd[256];
 	getcwd(wd,256);	
 	printf("Directory => %s\n",wd);	
@@ -70,7 +94,6 @@ int main(int argc, char **argv) {
 		list_branches(repo, GIT_BRANCH_LOCAL);	
 		printf("[REMOTE BRANCHES]\n");	
 		list_branches(repo, GIT_BRANCH_REMOTE);		
-
 	}else {
 		JNX_LOGC(JLOG_CRITICAL,"Not a git repository\n");
 	}
