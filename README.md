@@ -6,6 +6,7 @@ I often find myself having to try and keep track of what's going on and this sim
 
 I will add utility as I develop this repository and try to have a 1 press command that shows most of the information a developer needs without having to perform git gymnastics.
 
+[example](http://showterm.io/9ee33c196136b1594cfa1)
 
 ##Deps
 - OSX/Linux system
