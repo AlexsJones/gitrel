@@ -38,7 +38,7 @@ git_commit * get_last_commit ( git_repository * repo, const char *symb)
 	int rc;
 	git_commit * commit = NULL; /*  the result */
 	git_oid oid_parent_commit;  /*  the SHA1 for last commit */
-	rc = git_reference_name_to_id( &oid_parent_commit, repo, symb ? symb : "HEAD" );
+	rc = git_reference_name_to_id( &oid_parent_commit, repo, symb);
 	if ( rc == 0 )
 	{
 		rc = git_commit_lookup( &commit, repo, &oid_parent_commit );
@@ -102,6 +102,7 @@ void list_branches(git_repository *repo, git_branch_t type) {
 void list_all_references(git_repository *repo) {
 	git_strarray ref_list;
 	if(git_reference_list(&ref_list,repo) == 0) {
+	printf("[REFS]\n");
 		int x;
 		for(x=0;x<ref_list.count; ++x) {
 			git_commit *latest = get_last_commit(repo,ref_list.strings[x]);	
@@ -139,10 +140,9 @@ int main(int argc, char **argv) {
 		git_repository *repo = NULL;
 		int error = git_repository_open_ext(&repo,wd, GIT_REPOSITORY_OPEN_NO_SEARCH, NULL);
 		JNXCHECK(error == 0);
-			
-		list_all_references(repo);
 
 		list_remotes(repo);
+		list_all_references(repo);
 		printf("%s[LOCAL BRANCHES]%s\n",KYEL,RESET);
 		list_branches(repo, GIT_BRANCH_LOCAL);	
 		printf("%s[REMOTE BRANCHES]%s\n",KYEL,RESET);	
