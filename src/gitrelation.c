@@ -15,6 +15,16 @@
  *
  * =====================================================================================
  */
+#define KNRM  "\x1B[0m"
+#define KRED  "\x1B[31m"
+#define KGRN  "\x1B[32m"
+#define KYEL  "\x1B[33m"
+#define KBLU  "\x1B[34m"
+#define KMAG  "\x1B[35m"
+#define KCYN  "\x1B[36m"
+#define KWHT  "\x1B[37m"
+#define RESET "\033[0m"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <git2.h>
@@ -28,12 +38,9 @@ git_commit * get_last_commit ( git_repository * repo, const char *symb)
 	int rc;
 	git_commit * commit = NULL; /*  the result */
 	git_oid oid_parent_commit;  /*  the SHA1 for last commit */
-
-	/*  resolve HEAD into a SHA1 */
 	rc = git_reference_name_to_id( &oid_parent_commit, repo, symb ? symb : "HEAD" );
 	if ( rc == 0 )
 	{
-		/*  get the actual commit structure */
 		rc = git_commit_lookup( &commit, repo, &oid_parent_commit );
 		if ( rc == 0 )
 		{
@@ -83,27 +90,6 @@ void list_branches(git_repository *repo, git_branch_t type) {
 			}else {
 				printf("%d)%s",c,name);
 			}
-
-			const char *symbolic_target = git_reference_symbolic_target(ref);
-			git_commit *latest = get_last_commit(repo,symbolic_target);
-			//latest commit id
-			const git_oid *oid = git_commit_id(latest);
-			char *newsha = git_oid_allocfmt(oid);
-			//latest commit message
-			const char *message = git_commit_message(latest);
-			char *stripped_string = malloc(sizeof(char) * strlen(message));
-			bzero(stripped_string,sizeof(char)*strlen(message));
-			if(message){
-				strncpy(stripped_string,message,strlen(message)-1);
-			}
-			printf("[%s]\x1B[36m[%s]\033[0m",newsha,stripped_string);
-			git_commit_free(latest);
-			free(newsha);
-			free(stripped_string);
-			//latest symbolic target
-			if(symbolic_target) {
-				printf(" => %s",symbolic_target);
-			}
 			printf("\n");
 		}
 		++c;
@@ -112,6 +98,20 @@ void list_branches(git_repository *repo, git_branch_t type) {
 		printf("NONE\n");
 	}
 	git_branch_iterator_free(iterator);
+}
+void list_all_references(git_repository *repo) {
+	git_strarray ref_list;
+	if(git_reference_list(&ref_list,repo) == 0) {
+		int x;
+		for(x=0;x<ref_list.count; ++x) {
+			git_commit *latest = get_last_commit(repo,ref_list.strings[x]);	
+			char *sha = git_oid_allocfmt(git_commit_id(latest));
+			printf("ref:%s sha:[%s]\n",ref_list.strings[x],sha);
+			git_commit_free(latest);
+			free(sha);
+		}
+	}
+	git_strarray_free(&ref_list);
 }
 void usage() {
 	printf("========================gitrel============================\n");
@@ -139,10 +139,13 @@ int main(int argc, char **argv) {
 		git_repository *repo = NULL;
 		int error = git_repository_open_ext(&repo,wd, GIT_REPOSITORY_OPEN_NO_SEARCH, NULL);
 		JNXCHECK(error == 0);
+			
+		list_all_references(repo);
+
 		list_remotes(repo);
-		printf("[LOCAL BRANCHES]\n");
+		printf("%s[LOCAL BRANCHES]%s\n",KYEL,RESET);
 		list_branches(repo, GIT_BRANCH_LOCAL);	
-		printf("[REMOTE BRANCHES]\n");	
+		printf("%s[REMOTE BRANCHES]%s\n",KYEL,RESET);	
 		list_branches(repo, GIT_BRANCH_REMOTE);		
 	}else {
 		JNX_LOGC(JLOG_CRITICAL,"Not a git repository\n");
