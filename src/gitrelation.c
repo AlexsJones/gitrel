@@ -96,7 +96,7 @@ void list_branches(git_repository *repo, git_branch_t type) {
 			if(message){
 				strncpy(stripped_string,message,strlen(message)-1);
 			}
-			printf("[%s][%s]",newsha,stripped_string);
+			printf("[%s]\x1B[36m[%s]\033[0m",newsha,stripped_string);
 			git_commit_free(latest);
 			free(newsha);
 			free(stripped_string);
