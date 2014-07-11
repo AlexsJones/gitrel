@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
+set(CMAKE_INSTALL_PREFIX /usr/local)
 project(gitrel)
 file(GLOB SRC "src/*.c")
 add_executable(gitrel ${SRC})
 target_link_libraries(gitrel git2 jnxc)
+install(TARGETS gitrel DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
