@@ -8,6 +8,10 @@ I will add utility as I develop this repository and try to have a 1 press comman
 
 ###Example
 ```
+$gitrel
+```
+Response should be similar to the following...
+```
 [REMOTES]
 origin git@git.foo.com/remote.git
 upstream git@git.bar.com/remote.git
