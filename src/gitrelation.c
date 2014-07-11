@@ -20,6 +20,7 @@
 #include <git2.h>
 #include <jnxc_headers/jnxlog.h>
 #include <jnxc_headers/jnxcheck.h>
+#include <string.h>
 #include <unistd.h>
 #include <getopt.h>
 
@@ -29,7 +30,7 @@ void list_remotes(git_repository *repo) {
 	int x;
 	printf("-Remotes->\n");
 	for(x=0;x<remotes.count;++x) {
-		printf("-",remotes.strings[x]);
+		printf("-%s",remotes.strings[x]);
 		git_remote *remote = NULL;
 		error = git_remote_load(&remote,repo,remotes.strings[x]);
 		if(!error) {
@@ -43,8 +44,14 @@ void list_remotes(git_repository *repo) {
 }
 void list_branches(git_repository *repo, git_branch_t type) {
 
+	git_reference *head_ref;
+	int error = git_repository_head(&head_ref,repo);
+	JNXCHECK(error == 0);
+	const char *head_name;
+	error =git_branch_name(&head_name,head_ref);
+	JNXCHECK(error == 0);
 	git_branch_iterator *iterator;
-	int error = git_branch_iterator_new(&iterator,repo,type);
+	error = git_branch_iterator_new(&iterator,repo,type);
 	if(error != 0) {
 		JNX_LOGC(JLOG_CRITICAL,"Could not create local branch iterator\n");
 	}
@@ -53,7 +60,12 @@ void list_branches(git_repository *repo, git_branch_t type) {
 	while(git_branch_next(&ref,&type,iterator) != GIT_ITEROVER) {
 		const char *name;
 		if(git_branch_name(&name,ref) == 0) {
-			printf("%d)%s\n",c,name);
+			if(strcmp(name,head_name) == 0) {
+				printf("%d)%s [CURRENT]\n",c,name);
+			}else {
+
+				printf("%d)%s\n",c,name);
+			}
 		}
 		++c;
 	}
