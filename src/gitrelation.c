@@ -28,9 +28,9 @@ void list_remotes(git_repository *repo) {
 	git_strarray remotes = {0};
 	int error = git_remote_list(&remotes, repo);
 	int x;
-	printf("-Remotes->\n");
+	printf("[REMOTES]\n");
 	for(x=0;x<remotes.count;++x) {
-		printf("-%s ",remotes.strings[x]);
+		printf("%s ",remotes.strings[x]);
 		git_remote *remote = NULL;
 		error = git_remote_load(&remote,repo,remotes.strings[x]);
 		if(!error) {
@@ -61,11 +61,15 @@ void list_branches(git_repository *repo, git_branch_t type) {
 		const char *name;
 		if(git_branch_name(&name,ref) == 0) {
 			if(strcmp(name,head_name) == 0) {
-				printf("%d)%s [CURRENT]\n",c,name);
+				printf("%d)%s [CURRENT]",c,name);
 			}else {
-
-				printf("%d)%s\n",c,name);
+				printf("%d)%s",c,name);
 			}
+			const char *symbolic_target = git_reference_symbolic_target(ref);
+			if(symbolic_target) {
+				printf(" => %s",symbolic_target);
+			}
+			printf("\n");
 		}
 		++c;
 	}
@@ -96,7 +100,6 @@ int main(int argc, char **argv) {
 	}
 	char wd[256];
 	getcwd(wd,256);	
-	printf("Directory => %s\n",wd);	
 	if (git_repository_open_ext(NULL,wd, GIT_REPOSITORY_OPEN_NO_SEARCH, NULL) == 0) {
 		git_repository *repo = NULL;
 		int error = git_repository_open_ext(&repo,wd, GIT_REPOSITORY_OPEN_NO_SEARCH, NULL);
