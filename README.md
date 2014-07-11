@@ -1,5 +1,9 @@
-gitrel
-=====
+#gitrel
+
+
+##Deps
+- libgit2 (Usually will be installed on your system when you add git)
+
 
 A simple tool that shows in the commandline the status of your branches against remote branches etc.
 
