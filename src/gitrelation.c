@@ -23,14 +23,14 @@
 #include <string.h>
 #include <unistd.h>
 #include <getopt.h>
-git_commit * get_last_commit ( git_repository * repo )
+git_commit * get_last_commit ( git_repository * repo, const char *symb)
 {
 	int rc;
 	git_commit * commit = NULL; /*  the result */
 	git_oid oid_parent_commit;  /*  the SHA1 for last commit */
 
 	/*  resolve HEAD into a SHA1 */
-	rc = git_reference_name_to_id( &oid_parent_commit, repo, "HEAD" );
+	rc = git_reference_name_to_id( &oid_parent_commit, repo, symb ? symb : "HEAD" );
 	if ( rc == 0 )
 	{
 		/*  get the actual commit structure */
@@ -84,7 +84,8 @@ void list_branches(git_repository *repo, git_branch_t type) {
 				printf("%d)%s",c,name);
 			}
 
-			git_commit *latest = get_last_commit(repo);
+			const char *symbolic_target = git_reference_symbolic_target(ref);
+			git_commit *latest = get_last_commit(repo,symbolic_target);
 			//latest commit id
 			const git_oid *oid = git_commit_id(latest);
 			char *newsha = git_oid_allocfmt(oid);
@@ -100,7 +101,6 @@ void list_branches(git_repository *repo, git_branch_t type) {
 			free(newsha);
 			free(stripped_string);
 			//latest symbolic target
-			const char *symbolic_target = git_reference_symbolic_target(ref);
 			if(symbolic_target) {
 				printf(" => %s",symbolic_target);
 			}
