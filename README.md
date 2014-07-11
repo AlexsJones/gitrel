@@ -6,8 +6,7 @@ I often find myself having to try and keep track of what's going on and this sim
 
 I will add utility as I develop this repository and try to have a 1 press command that shows most of the information a developer needs without having to perform git gymnastics.
 
-example : http://showterm.io/2aecd85216ae1803a685e
-
+example : http://showterm.io/814f40c0958e4327f1f1e
 ##Deps
 - OSX/Linux system
 - CMake && GCC/LLVM
