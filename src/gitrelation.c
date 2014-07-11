@@ -79,7 +79,7 @@ void list_branches(git_repository *repo, git_branch_t type) {
 		const char *name;
 		if(git_branch_name(&name,ref) == 0) {
 			if(strcmp(name,head_name) == 0) {
-				printf("%d)%s [CURRENT]",c,name);
+				printf("%d)%s \x1B[34m[CURRENT]\033[0m",c,name);
 			}else {
 				printf("%d)%s",c,name);
 			}
