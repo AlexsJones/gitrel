@@ -9,6 +9,8 @@ I will add utility as I develop this repository and try to have a 1 press comman
 example : http://showterm.io/acc29fc701689ea95f883
 
 ##Deps
+- OSX/Linux system
+- CMake && GCC/LLVM
 - libgit2 (Usually will be installed on your system when you add git)
 
 ```Shell
