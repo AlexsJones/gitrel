@@ -23,7 +23,25 @@
 #include <string.h>
 #include <unistd.h>
 #include <getopt.h>
+git_commit * get_last_commit ( git_repository * repo )
+{
+	int rc;
+	git_commit * commit = NULL; /*  the result */
+	git_oid oid_parent_commit;  /*  the SHA1 for last commit */
 
+	/*  resolve HEAD into a SHA1 */
+	rc = git_reference_name_to_id( &oid_parent_commit, repo, "HEAD" );
+	if ( rc == 0 )
+	{
+		/*  get the actual commit structure */
+		rc = git_commit_lookup( &commit, repo, &oid_parent_commit );
+		if ( rc == 0 )
+		{
+			return commit;
+		}
+	}
+	return NULL;
+}
 void list_remotes(git_repository *repo) {
 	git_strarray remotes = {0};
 	int error = git_remote_list(&remotes, repo);
@@ -65,6 +83,17 @@ void list_branches(git_repository *repo, git_branch_t type) {
 			}else {
 				printf("%d)%s",c,name);
 			}
+
+			git_commit *latest = get_last_commit(repo);
+			//latest commit id
+			const git_oid *oid = git_commit_id(latest);
+			char *newsha = git_oid_allocfmt(oid);
+			//latest commit message
+			const char *message = git_commit_message(latest);
+			printf("[%s][%s]",newsha,message ? message : "None");
+			git_commit_free(latest);
+			free(newsha);
+			//latest symbolic target
 			const char *symbolic_target = git_reference_symbolic_target(ref);
 			if(symbolic_target) {
 				printf(" => %s",symbolic_target);
