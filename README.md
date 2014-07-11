@@ -14,7 +14,6 @@ I will add utility as I develop this repository and try to have a 1 press comman
 - libgit2 (Usually will be installed on your system when you add git)
 
 ```Shell
-./make_deps //This installs submodules
 cmake .
 make
 sudo make install

@@ -1,6 +1,0 @@
-git submodule update --init --recursive
-pushd jnxlibc
-cmake .
-make
-sudo make install 
-popd
