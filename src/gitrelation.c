@@ -33,6 +33,9 @@
 #include <string.h>
 #include <unistd.h>
 #include <getopt.h>
+
+#define NON_VERBOSE_MAX_DISPLAY 5
+
 git_commit * get_last_commit ( git_repository * repo, const char *symb)
 {
 	int rc;
@@ -66,7 +69,7 @@ void list_remotes(git_repository *repo) {
 	}
 	git_strarray_free(&remotes);
 }
-void list_branches(git_repository *repo, git_branch_t type) {
+void list_branches(git_repository *repo, git_branch_t type, int isverbose) {
 
 	git_reference *head_ref;
 	int error = git_repository_head(&head_ref,repo);
@@ -92,19 +95,22 @@ void list_branches(git_repository *repo, git_branch_t type) {
 			printf("\n");
 		}
 		++c;
+		if(!isverbose && c >= NON_VERBOSE_MAX_DISPLAY) {
+			break;
+		}
 	}
 	if(c == 0) {
 		printf("NONE\n");
 	}
 	git_branch_iterator_free(iterator);
 }
-void list_all_references(git_repository *repo) {
+void list_all_references(git_repository *repo, int isverbose) {
 	git_strarray ref_list;
 	const char *refname;
 	git_reference *ref;
 	int i;
 	char out[41];
-   	out[40]	= '\0';
+	out[40]	= '\0';
 	if(git_reference_list(&ref_list,repo) == 0) {
 		for (i = 0; i < ref_list.count; ++i) {
 			refname = ref_list.strings[i];
@@ -119,17 +125,21 @@ void list_all_references(git_repository *repo) {
 					break;
 				default:
 					fprintf(stderr, "Unexpected reference type\n");
+
+			}
+
+			if(!isverbose && i >= NON_VERBOSE_MAX_DISPLAY) {
+				break;
 			}
 		}
 		git_strarray_free(&ref_list);
 
-	}else {
-		perror("git_reference_list:");
 	}
 }
 void usage() {
 	printf("========================gitrel============================\n");
 	printf("A simple tool for reminding you what's going on with git\n");
+	printf("Toggle --verbose (-v) for full output\n");
 	printf("==========================================================\n");
 	exit(0);
 }
@@ -137,13 +147,18 @@ int main(int argc, char **argv) {
 
 	int c;
 	int option_index = 0;
+	int v = 0;
 	static struct option long_option[] = { 
-		{"help",no_argument, 0, 'h' }
+		{"help",no_argument, 0, 'h' },
+		{"verbose",no_argument,0,'v'}
 	};
 	while(((c = getopt_long(argc, argv,"h",long_option,&option_index))) != -1) {
 		switch(c) {
 			case 'h':
 				usage();
+				break;
+			case 'v':
+				v = 1;
 				break;
 		}
 	}
@@ -157,11 +172,11 @@ int main(int argc, char **argv) {
 		printf("%s[REMOTES]%s\n",KYEL,RESET);
 		list_remotes(repo);
 		printf("%s[REFS]%s\n",KYEL,RESET);
-		list_all_references(repo);
+		list_all_references(repo,v);
 		printf("%s[LOCAL BRANCHES]%s\n",KYEL,RESET);
-		list_branches(repo, GIT_BRANCH_LOCAL);	
+		list_branches(repo, GIT_BRANCH_LOCAL,v);	
 		printf("%s[REMOTE BRANCHES]%s\n",KYEL,RESET);	
-		list_branches(repo, GIT_BRANCH_REMOTE);		
+		list_branches(repo, GIT_BRANCH_REMOTE,v);		
 	}else {
 		JNX_LOGC(JLOG_CRITICAL,"Not a git repository\n");
 	}
