@@ -53,7 +53,6 @@ void list_remotes(git_repository *repo) {
 	git_strarray remotes = {0};
 	int error = git_remote_list(&remotes, repo);
 	int x;
-	printf("[REMOTES]\n");
 	for(x=0;x<remotes.count;++x) {
 		printf("%s ",remotes.strings[x]);
 		git_remote *remote = NULL;
@@ -101,18 +100,32 @@ void list_branches(git_repository *repo, git_branch_t type) {
 }
 void list_all_references(git_repository *repo) {
 	git_strarray ref_list;
+	const char *refname;
+	git_reference *ref;
+	int i;
+	char out[41];
+   	out[40]	= '\0';
 	if(git_reference_list(&ref_list,repo) == 0) {
-	printf("[REFS]\n");
-		int x;
-		for(x=0;x<ref_list.count; ++x) {
-			git_commit *latest = get_last_commit(repo,ref_list.strings[x]);	
-			char *sha = git_oid_allocfmt(git_commit_id(latest));
-			printf("ref:%s sha:[%s]\n",ref_list.strings[x],sha);
-			git_commit_free(latest);
-			free(sha);
+		for (i = 0; i < ref_list.count; ++i) {
+			refname = ref_list.strings[i];
+			git_reference_lookup(&ref, repo, refname);
+			switch (git_reference_type(ref)) {
+				case GIT_REF_OID:
+					git_oid_fmt(out, git_reference_target(ref));
+					printf("%s => [%s]\n", refname, out);
+					break;
+				case GIT_REF_SYMBOLIC:
+					printf("%s => %s\n", refname, git_reference_symbolic_target(ref));
+					break;
+				default:
+					fprintf(stderr, "Unexpected reference type\n");
+			}
 		}
+		git_strarray_free(&ref_list);
+
+	}else {
+		perror("git_reference_list:");
 	}
-	git_strarray_free(&ref_list);
 }
 void usage() {
 	printf("========================gitrel============================\n");
@@ -141,7 +154,9 @@ int main(int argc, char **argv) {
 		int error = git_repository_open_ext(&repo,wd, GIT_REPOSITORY_OPEN_NO_SEARCH, NULL);
 		JNXCHECK(error == 0);
 
+		printf("%s[REMOTES]%s\n",KYEL,RESET);
 		list_remotes(repo);
+		printf("%s[REFS]%s\n",KYEL,RESET);
 		list_all_references(repo);
 		printf("%s[LOCAL BRANCHES]%s\n",KYEL,RESET);
 		list_branches(repo, GIT_BRANCH_LOCAL);	
