@@ -90,9 +90,15 @@ void list_branches(git_repository *repo, git_branch_t type) {
 			char *newsha = git_oid_allocfmt(oid);
 			//latest commit message
 			const char *message = git_commit_message(latest);
-			printf("[%s][%s]",newsha,message ? message : "None");
+			char *stripped_string = malloc(sizeof(char) * strlen(message));
+			bzero(stripped_string,sizeof(char)*strlen(message));
+			if(message){
+				strncpy(stripped_string,message,strlen(message)-1);
+			}
+			printf("[%s][%s]",newsha,stripped_string);
 			git_commit_free(latest);
 			free(newsha);
+			free(stripped_string);
 			//latest symbolic target
 			const char *symbolic_target = git_reference_symbolic_target(ref);
 			if(symbolic_target) {
