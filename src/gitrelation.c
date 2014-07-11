@@ -30,7 +30,7 @@ void list_remotes(git_repository *repo) {
 	int x;
 	printf("-Remotes->\n");
 	for(x=0;x<remotes.count;++x) {
-		printf("-%s",remotes.strings[x]);
+		printf("-%s ",remotes.strings[x]);
 		git_remote *remote = NULL;
 		error = git_remote_load(&remote,repo,remotes.strings[x]);
 		if(!error) {
