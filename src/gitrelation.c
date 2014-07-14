@@ -139,7 +139,7 @@ void list_all_references(git_repository *repo, int isverbose) {
 void usage() {
 	printf("========================gitrel============================\n");
 	printf("A simple tool for reminding you what's going on with git\n");
-	printf("Toggle --verbose (-v) for full output\n");
+	printf("Toggle --verbose for full output\n");
 	printf("==========================================================\n");
 	exit(0);
 }
