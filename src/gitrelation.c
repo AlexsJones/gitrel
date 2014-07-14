@@ -167,8 +167,8 @@ int main(int argc, char **argv) {
 	if (git_repository_open_ext(NULL,wd, GIT_REPOSITORY_OPEN_NO_SEARCH, NULL) == 0) {
 		git_repository *repo = NULL;
 		int error = git_repository_open_ext(&repo,wd, GIT_REPOSITORY_OPEN_NO_SEARCH, NULL);
+		printf("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
 		JNXCHECK(error == 0);
-
 		printf("%s[REMOTES]%s\n",KYEL,RESET);
 		list_remotes(repo);
 		printf("%s[REFS]%s\n",KYEL,RESET);
@@ -177,6 +177,8 @@ int main(int argc, char **argv) {
 		list_branches(repo, GIT_BRANCH_LOCAL,v);	
 		printf("%s[REMOTE BRANCHES]%s\n",KYEL,RESET);	
 		list_branches(repo, GIT_BRANCH_REMOTE,v);		
+		printf("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
+
 	}else {
 		JNX_LOGC(JLOG_CRITICAL,"Not a git repository\n");
 	}
