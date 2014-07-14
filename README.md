@@ -7,6 +7,8 @@ I often find myself having to try and keep track of what's going on and this sim
 I will add utility as I develop this repository and try to have a 1 press command that shows most of the information a developer needs without having to perform git gymnastics.
 
 ###Example
+
+Example terminal output: http://showterm.io/a94f295ba7ad822e2f22c#fast
 ```
 $gitrel
 ```
