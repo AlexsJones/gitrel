@@ -36,8 +36,6 @@
 
 #define NON_VERBOSE_MAX_DISPLAY 5
 
-JNX_LOG_CONTEXT(globContext);
-
 git_commit * get_last_commit ( git_repository * repo, const char *symb)
 {
   int rc;
@@ -82,7 +80,7 @@ void list_branches(git_repository *repo, git_branch_t type, int isverbose) {
   git_branch_iterator *iterator;
   error = git_branch_iterator_new(&iterator,repo,type);
   if(error != 0) {
-    JNX_LOG(globContext,"Could not create local branch iterator\n");
+    JNX_LOG(LDEBUG,"Could not create local branch iterator\n");
   }
   git_reference *ref;
   int c = 0;
@@ -146,9 +144,6 @@ void usage() {
   exit(0);
 }
 int main(int argc, char **argv) {
-
-  
-  globContext= JNX_LOG_CREATE(NULL,FILETYPE);
   
   int c;
   int option_index = 0;
@@ -185,7 +180,7 @@ int main(int argc, char **argv) {
     printf("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
 
   }else {
-    JNX_LOG(globContext,"Not a git repository\n");
+    JNX_LOG(LDEBUG,"Not a git repository\n");
   }
   return 0;
 }
